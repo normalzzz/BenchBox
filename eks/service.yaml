@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchbox
+  namespace: benchbox
+  labels:
+    app.kubernetes.io/name: benchbox
+    app.kubernetes.io/component: app
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: benchbox
+    app.kubernetes.io/component: app
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

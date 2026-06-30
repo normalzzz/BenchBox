@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchbox
+  namespace: benchbox
+  labels:
+    app.kubernetes.io/name: benchbox
+    app.kubernetes.io/component: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: benchbox
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: benchbox
+        app.kubernetes.io/component: app
+    spec:
+      containers:
+        - name: benchbox
+          image: benchbox:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ADDR
+              value: ":8080"
+            - name: WORKERS
+              value: "4"
+            - name: MAX_MEMORY_MB
+              value: "3072"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "2"
+              memory: 3Gi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            capabilities:
+              drop:
+                - ALL

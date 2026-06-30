@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: benchbox
+  labels:
+    app.kubernetes.io/name: benchbox
+    app.kubernetes.io/part-of: benchbox
